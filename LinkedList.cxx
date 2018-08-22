@@ -32,15 +32,23 @@ Node* insertAtEnd( Node* head, int data )
   // So we store the orignal <head> pointer so we can return it back
   else
     {
-      int count = 0;
-      while( head != NULL )
+      // Head is present, hence size is atleast 1
+      int count = 1;
+
+      // We have already stored a copy of head as 'headToReturn'
+      // All we need to do now is to go the last element of the list
+      // This is done by creating a loop which runs till it finds a Node elemnt which has 'NULL' next element
+      // Then we create a new element and wrie it to be the last in the list
+      while( head->next != NULL )
 	{
 	  head = head->next;
 	  count = count + 1;
 	}
-      head = new Node();
-      head->next = NULL;
-      head->data = data;
+      Node* newNode = new Node();
+      newNode->next = NULL;
+      newNode->data = data;
+
+      head->next = newNode;
 
       std::cout << "Inserted " << data << " at head, size of List is " << count + 1 << std::endl;
     }
@@ -63,6 +71,8 @@ int main()
   Node * head = NULL;
   head = insertAtEnd( head, 10 );
   head = insertAtEnd( head, 20 );
+  head = insertAtEnd( head, 30 );
+  head = insertAtEnd( head, 40 );
   printList( head );
   return 0;
 }
