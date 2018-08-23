@@ -66,13 +66,67 @@ void printList( Node* head )
   std::cout << "--|" << std::endl; 
 }
 
+int listSize( Node* head )
+{
+  if( head == NULL )
+    {
+      return 0;
+    }
+  int size = 1;
+  while( head->next != NULL )
+    {
+      size = size + 1;
+      head = head->next;
+    }
+  return size;
+}
+
+
+void swap( int first, int second, Node* head )
+{
+  // Check size, if any of the funny things among below happens, return
+  int size = listSize( head );
+  if( first > size || second > size || first < 1 || second < 1 )
+    {
+      std::cout << "Can't swap, either index argument is out of bounds" << std::endl;
+      return;
+    }
+
+  Node* firstE = head;
+
+  // pre increment is required as 1 means look for data at head, not goto next
+  while(  --first )
+    firstE = firstE->next;
+
+  Node* secondE = head;
+  while( --secondE )
+    secondE = secondE->next;
+
+  std::cout << "first element " << firstE->data << std::endl;
+  std::cout << "second element " << secondE->data << std::endl;
+}
+
+
 int main()
 {
   Node * head = NULL;
+  std::cout << "List size: " << listSize( head ) << std::endl;
   head = insertAtEnd( head, 10 );
+  std::cout << "List size: " << listSize( head ) << std::endl;
   head = insertAtEnd( head, 20 );
+  std::cout << "List size: " << listSize( head ) << std::endl;
   head = insertAtEnd( head, 30 );
+  std::cout << "List size: " << listSize( head ) << std::endl;
   head = insertAtEnd( head, 40 );
+  std::cout << "List size: " << listSize( head ) << std::endl;
   printList( head );
+
+  while( 1 )
+    {
+      int first, second = 0;
+      std::cin >> first >> second;
+      swap( first, second, head );
+    }
+  
   return 0;
 }
