@@ -145,12 +145,22 @@ Node* swap( int first, int second, Node* head )
     3. prev_second->next to first
     4. first->next to seond->next
   */
-  Node* temp = secondE->next;
-  
-  firstE_prev->next = secondE;
-  secondE->next = firstE->next;
+  Node* temp = firstE->next;
+
+  // step 1
+  firstE->next = secondE->next;
+
+  // step 2
+  secondE->next = temp;
+
+  // step 3
   secondE_prev->next = firstE;
-  firstE->next = temp;
+
+  // Only if required
+  if( firstE != firstE_prev )
+    {
+      firstE_prev->next = secondE;
+    }
 
   // we have to return the new head as well
   return newHead;
