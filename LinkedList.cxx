@@ -84,6 +84,12 @@ int listSize( Node* head )
 
 Node* swap( int first, int second, Node* head )
 {
+  if( head == NULL )
+    {
+      std::cout << "swap: NULL head passed" << std::endl;
+      return NULL;
+    }
+  
   // Check size, if any of the funny things among below happens, return
   int size = listSize( head );
   std::cout << "swap: size of list is  " << size << std::endl;
@@ -95,91 +101,173 @@ Node* swap( int first, int second, Node* head )
 
   // we will like to store the the prev pointer as well
   Node* firstE = head;
-  Node* firstE_prev = head;
+  Node* firstE_prev = NULL;
 
   // pre increment is required
-  while(  --first && firstE->next != NULL )
+  while(  --first && firstE != NULL )
     {
       firstE_prev = firstE;
       firstE = firstE->next;
     }
 
   Node* secondE = head;
-  Node* secondE_prev = head;
-  while( --second && secondE->next != NULL )
+  Node* secondE_prev = NULL;
+  while( --second && secondE != NULL )
     {
       secondE_prev = secondE;
       secondE = secondE->next;
     }
 
-  std::cout << "prev first element " << firstE_prev->data << std::endl;
-  std::cout << "first element " << firstE->data << std::endl;
-  std::cout << "prev second element " << secondE_prev->data << std::endl;
-  std::cout << "second element " << secondE->data << std::endl;
-
-  Node* newHead = NULL;
-  if( firstE == firstE_prev )
-    {
-      newHead = secondE;
-    }
-  else
-    {
-      newHead = head;
-    }
-  
-  /* 
-     Real swapping logic starts here
-     
-     10 --> 20 --> 30 -- > 40 --|
-      ^      ^      ^       ^
-    1.|    2.|    3.|     4.|
-
-    If we had to swap 20 and 40
-    1, 2 represent element and prev pointer for 20
-    3. 4 represent element and prev pointer for 40
-
-    We want to change 
-    1. prev_first->next to second
-    2. second_next to first->next
-
-    3. prev_second->next to first
-    4. first->next to seond->next
-  */
-  Node* temp = firstE->next;
-
-  // step 1
-  firstE->next = secondE->next;
-
-  // step 2
-  secondE->next = temp;
-
-  // step 3
-  secondE_prev->next = firstE;
-
-  // Only if required
-  if( firstE != firstE_prev )
+  // fix head first
+  if( firstE_prev != NULL )
     {
       firstE_prev->next = secondE;
     }
+  else
+    {
+      head = secondE;
+    }
+
+  if( secondE_prev != NULL )
+    {
+      secondE_prev->next = firstE;
+    }
+  else
+    {
+      head = firstE;
+    }
+
+  Node* temp = firstE->next;
+  firstE->next = secondE->next;
+  secondE->next = temp;
+  
+  // https://www.geeksforgeeks.org/swap-nodes-in-a-linked-list-without-swapping-data/
 
   // we have to return the new head as well
-  return newHead;
+  return head;
+}
+
+Node* reverse( Node* head )
+{
+  int size = listSize( head );
+  int first = 1;
+  int second = size;
+
+  while( first < second )
+    {
+      std::cout << "reverse: swappig " << first << " " << second << std::endl;
+      head = swap( first, second, head );
+      first = first + 1;
+      second = second - 1;	
+    }
+  return head;
+}
+
+Node* addList( Node* head1, Node* head2 )
+{
+
+  std::cout << "addlist list 1 " << std::endl;
+  printList( head1 );
+  std::cout << "addlist list 2 " << std::endl;
+  printList( head2 );
+  
+  head1 = reverse( head1 );
+  head2 = reverse( head2 );
+
+  int size_l1 = listSize( head1 );
+  int size_l2 = listSize( head2 );
+
+  if( size_l1 > size_l2 )
+    {
+      int diff = size_l1 - size_l2;
+      while( diff > 0 )
+	{
+	  head2 = insertAtEnd( head2, 0 );
+	}
+    }
+  else
+    {
+      int diff = size_l2 - size_l1;
+      while( diff > 0 )
+	{
+	  head1 = insertAtEnd( head1, 0 );
+	}
+    }
+
+  // Now we are sure both list are of same size
+  
+  Node* head3 = NULL;
+  int carry = 0;
+  while( head1->next != NULL || head2->next != NULL )
+    {
+      int sum = head1->data + head2->data + carry;
+      if( sum > 9 )
+	{
+	  head3 = insertAtEnd( head3, sum % 10 );
+	  carry = 1;
+	}
+
+      else
+	{
+	  head3 = insertAtEnd( head3, sum );
+	  carry = 0;
+	}
+      head1 = head1->next;
+      head2 = head2->next;
+    }
+
+  // final element
+  int final = head1->data + head2->data + carry;
+  if( final > 9 )
+    {
+      head3 = insertAtEnd( head3, final % 10 );
+      carry = 1;
+    }
+  
+  else
+    {
+      head3 = insertAtEnd( head3, final );
+      carry = 0;
+    }
+  
+  if( carry )
+    head3 = insertAtEnd( head3, 1 );
+
+  head3 = reverse( head3 );
+
+  printList( head3 );
+  // std::cout << "addlist result" << printList( head3 ) << std::endl;
+  return head3;
 }
 
 int main()
 {
   Node * head = NULL;
   std::cout << "List size: " << listSize( head ) << std::endl;
-  head = insertAtEnd( head, 10 );
+  head = insertAtEnd( head, 5 );
   std::cout << "List size: " << listSize( head ) << std::endl;
-  head = insertAtEnd( head, 20 );
+  head = insertAtEnd( head, 5 );
   std::cout << "List size: " << listSize( head ) << std::endl;
-  head = insertAtEnd( head, 30 );
+  head = insertAtEnd( head, 5 );
   std::cout << "List size: " << listSize( head ) << std::endl;
-  head = insertAtEnd( head, 40 );
+  head = insertAtEnd( head, 5 );
   std::cout << "List size: " << listSize( head ) << std::endl;
   printList( head );
 
+  head = reverse( head );
+  printList( head );
+
+  Node * head2 = NULL;
+  head2 = insertAtEnd( head2, 5 );
+  head2 = insertAtEnd( head2, 5 );
+  head2 = insertAtEnd( head2, 5 );
+  head2 = insertAtEnd( head2, 5 );
+  printList( head2 );
+
+  Node* head3 = addList( head, head2 );
+  printList( head3 );
+
+  /*
   while( 1 )
     {
       int first, second = 0;
@@ -187,6 +275,7 @@ int main()
       head = swap( first, second, head );
       printList( head );
     }
+  */
   
   return 0;
 }
