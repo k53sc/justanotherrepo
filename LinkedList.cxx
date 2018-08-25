@@ -82,30 +82,79 @@ int listSize( Node* head )
 }
 
 
-void swap( int first, int second, Node* head )
+Node* swap( int first, int second, Node* head )
 {
   // Check size, if any of the funny things among below happens, return
   int size = listSize( head );
+  std::cout << "swap: size of list is  " << size << std::endl;
   if( first > size || second > size || first < 1 || second < 1 )
     {
       std::cout << "Can't swap, either index argument is out of bounds" << std::endl;
-      return;
+      return head;
     }
 
+  // we will like to store the the prev pointer as well
   Node* firstE = head;
+  Node* firstE_prev = head;
 
-  // pre increment is required as 1 means look for data at head, not goto next
-  while(  --first )
-    firstE = firstE->next;
+  // pre increment is required
+  while(  --first && firstE->next != NULL )
+    {
+      firstE_prev = firstE;
+      firstE = firstE->next;
+    }
 
   Node* secondE = head;
-  while( --secondE )
-    secondE = secondE->next;
+  Node* secondE_prev = head;
+  while( --second && secondE->next != NULL )
+    {
+      secondE_prev = secondE;
+      secondE = secondE->next;
+    }
 
+  std::cout << "prev first element " << firstE_prev->data << std::endl;
   std::cout << "first element " << firstE->data << std::endl;
+  std::cout << "prev second element " << secondE_prev->data << std::endl;
   std::cout << "second element " << secondE->data << std::endl;
-}
 
+  Node* newHead = NULL;
+  if( firstE == firstE_prev )
+    {
+      newHead = secondE;
+    }
+  else
+    {
+      newHead = head;
+    }
+  
+  /* 
+     Real swapping logic starts here
+     
+     10 --> 20 --> 30 -- > 40 --|
+      ^      ^      ^       ^
+    1.|    2.|    3.|     4.|
+
+    If we had to swap 20 and 40
+    1, 2 represent element and prev pointer for 20
+    3. 4 represent element and prev pointer for 40
+
+    We want to change 
+    1. prev_first->next to second
+    2. second_next to first->next
+
+    3. prev_second->next to first
+    4. first->next to seond->next
+  */
+  Node* temp = secondE->next;
+  
+  firstE_prev->next = secondE;
+  secondE->next = firstE->next;
+  secondE_prev->next = firstE;
+  firstE->next = temp;
+
+  // we have to return the new head as well
+  return newHead;
+}
 
 int main()
 {
@@ -125,7 +174,8 @@ int main()
     {
       int first, second = 0;
       std::cin >> first >> second;
-      swap( first, second, head );
+      head = swap( first, second, head );
+      printList( head );
     }
   
   return 0;
